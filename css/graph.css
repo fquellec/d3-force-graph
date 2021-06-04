@@ -1,0 +1,19 @@
+body {
+      font-family: sans-serif;
+}
+
+.tooltip {
+      font-size: 0.7rem;
+      background-color: white;
+      border: solid white;
+      border-width: 2px;
+      border-radius: 5px;
+      padding: 5px;
+      position: absolute;
+      width: 150px;
+      pointer-events: none;
+      webkit-box-shadow: 0px 0px 10px grey;
+      moz-box-shadow:  0px 0px 10px grey;
+      box-shadow: 0px 0px 10px grey;
+
+}
