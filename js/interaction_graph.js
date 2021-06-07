@@ -50,7 +50,7 @@ function drawGraph(id, config){
       .range(colorScaleRange);
 
     var simulation = d3.forceSimulation()
-      .force("boundary", forceBoundary(0,0,width-30, height-30))
+      .force("boundary", forceBoundary(30,30,width-30, height-30))
       .force("link", d3.forceLink().id(function(d) { return d.id; }))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force('charge', d3.forceManyBody().strength(-50))
@@ -75,7 +75,7 @@ function drawGraph(id, config){
         .attr("fill", function(d) { return color(d.nonouiaucun); })
         .attr("stroke", function(d) {return borderColor[0]; })
         .attr("stroke-opacity", 1)
-        .attr("stroke-width", function(d) {return 0.05*size(d.nb_tweets);})
+        .attr("stroke-width", function(d) {return 0.1*size(size(d.nb_tweets));})
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -84,7 +84,7 @@ function drawGraph(id, config){
           var textToDisplay = "<b>" + d.name + "</b><br>" 
                     + "Nombre de tweets: <b>" + d.nb_tweets + "</b>.<br>"
                     + "Nombre de Followers: <b>" + d.followers + "</b>.<br>"
-                    + "Nombre d'intéractions': <b>" + d.interaction + "</b>.<br>"
+                    + "Nombre d'intéractions: <b>" + d.interaction + "</b>.<br>"
                     ;
 
           // Compute bounded coordinates
@@ -102,8 +102,8 @@ function drawGraph(id, config){
 
 
           tooltip.style("opacity", 1);
-          //d3.select(this.parentNode.appendChild(this)).style("stroke", borderColor[1]);
-          d3.select(this.parentNode.appendChild(this)).style("fill", d3.rgb(color(d.nonouiaucun)).darker(1));//brighter(1)
+          d3.select(this.parentNode.appendChild(this)).style("stroke", color(d.nonouiaucun));
+          d3.select(this.parentNode.appendChild(this)).style("fill", 'white');//brighter(1)d3.rgb(color(d.nonouiaucun)).darker(1)
 
         })
         .on("mousemove", function(d){
@@ -113,7 +113,7 @@ function drawGraph(id, config){
         .on("mouseleave", function(d){
           tooltip.style("opacity", 0);
           d3.select(this.parentNode.appendChild(this)).style("fill", color(d.nonouiaucun));
-          //d3.select(this.parentNode.appendChild(this)).style("stroke", borderColor[0]);
+          d3.select(this.parentNode.appendChild(this)).style("stroke", borderColor[0]);
             
         });
 
@@ -151,7 +151,7 @@ function drawGraph(id, config){
           .attr("y2", function(d) { return d.target.y; });
     }
 
-    // Add Legend
+    // Add Legend color
     svg.append("g")
       .attr("class", "legend")
       .style("font-size", "0.5rem")
@@ -160,16 +160,74 @@ function drawGraph(id, config){
     var colorLegend = d3.legendColor()
       .labelFormat(d3.format(".0f"))
       .shape("path", d3.symbol().type(d3.symbolCircle).size(150)())
-      .cells(3)
-      .title("")
-      .labelWrap(40)
-      .titleWidth(60)
+      .title("Hashtags utilisés ou retweetés")
+      .labelWrap(30)
+      .titleWidth(100)
       .orient("vertical")
       .scale(color)
-      .labelOffset(12);
+      .shapePadding(10)
+      .labelOffset(10);
 
     svg.select(".legend")
       .call(colorLegend);
+
+
+    // Add legend size
+    var valuesToShow = [1, 10, 50]
+    var xCircle = 50
+    var xLabel = 100
+    var yCircle = height
+
+    svg
+      .append("text")
+      .attr("x", xCircle-35)
+      .attr("y", height-85)
+      .attr("dy", "0em")
+      .style("font-size", "0.5rem")
+      .text("Nombre de tweets postés,");
+    svg
+      .append("text")
+      .attr("x", xCircle-35)
+      .attr("y", height-85)
+      .attr("dy", "1em")
+      .style("font-size", "0.5rem")
+      .text("répondus ou retweetés");
+
+    svg
+      .selectAll("legend_size")
+      .data(valuesToShow)
+      .enter()
+      .append("circle")
+        .attr("cx", xCircle)
+        .attr("cy", function(d){ return yCircle - size(d) } )
+        .attr("r", function(d){ return size(d) })
+        .style("fill", "none")
+        .attr("stroke", "black")
+
+    // Add legend: segments
+    svg
+      .selectAll("legend_size")
+      .data(valuesToShow)
+      .enter()
+      .append("line")
+        .attr('x1', function(d){ return xCircle + size(d) } )
+        .attr('x2', xLabel)
+        .attr('y1', function(d){ return yCircle - size(d) } )
+        .attr('y2', function(d){ return yCircle - size(d) } )
+        .attr('stroke', 'black')
+        .style('stroke-dasharray', ('2,2'))
+
+    // Add legend: labels
+    svg
+      .selectAll("legend_size")
+      .data(valuesToShow)
+      .enter()
+      .append("text")
+        .attr('x', xLabel)
+        .attr('y', function(d){ return yCircle - size(d) } )
+        .text( function(d){ return d } )
+        .style("font-size", 10)
+        .attr('alignment-baseline', 'middle')
 
     function dragstarted(d) {
       if (!d3.event.active) simulation.alphaTarget(0.3).restart();
