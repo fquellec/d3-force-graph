@@ -3,7 +3,7 @@ dflt_config = {
   width               : 900,
   height              : 450,
   padding             : 0,
-  colorScaleDomain    : ["Opposé","Favorable","Utilise des hashtags pour et contre les initiatives","Ne tweete pas avec des hashtags"],
+  colorScaleDomain    : ["Opposé","Favorable","Utilise des hashtags pour et contre les initiatives","Ne tweete pas avec ces hashtags"],
   colorScaleRange     : ['#d64541','#87d37c','#CD853F', '#bfbfbf'],
   borderColor         : ["white", "#34495e"],//"#e4e9ed", "#34495e"
 };
