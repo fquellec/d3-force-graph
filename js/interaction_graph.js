@@ -127,16 +127,6 @@ function drawGraph(id, config){
           .style("font-size", function(d) { return Math.max(3 * size(d.nb_tweets)/ d.name.length, 5) })
           .style("fill", "white");
 
-        // Add text to pseudopodyrlife
-    node
-      .filter(function(d) { return d.name == "pseudopodyrlife" })
-      .append("text")
-          .text("Edward Mitchell")
-          .style("text-anchor", "middle")
-          .style("font-weight", "bold")
-          .style("font-size", "6pt")
-          .style("fill", "black");
-
   /* 13 letters 40 8pt 
     var labels = node.append("text")
         .text(function(d) {
