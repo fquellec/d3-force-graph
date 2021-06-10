@@ -3,7 +3,7 @@ dflt_config = {
   width               : 900,
   height              : 450,
   padding             : 0,
-  colorScaleDomain    : ["Opposé","Favorable","Les deux","Aucun"],
+  colorScaleDomain    : ["Opposé","Favorable","Utilise des hashtags pour et contre les initiatives","Ne tweete pas avec des hashtags"],
   colorScaleRange     : ['#d64541','#87d37c','#CD853F', '#bfbfbf'],
   borderColor         : ["white", "#34495e"],//"#e4e9ed", "#34495e"
 };
@@ -61,14 +61,14 @@ function drawGraph(id, config){
         .selectAll("line")
         .data(graph.links)
         .enter().append("line")
-          .attr("stroke-width", function(d) { return 0.1*d.weight; })
+          .attr("stroke-width", function(d) { return 0.2*d.weight; })
           .attr("stroke", "grey")
 
     var node = svg.append("g")
         .attr("class", "nodes")
-      .selectAll("g")
-      .data(graph.nodes)
-      .enter().append("g")
+        .selectAll("g")
+        .data(graph.nodes)
+        .enter().append("g");
       
     var circles = node.append("circle")
         .attr("r", function(d) { return  size(d.nb_tweets); })
@@ -102,8 +102,8 @@ function drawGraph(id, config){
 
 
           tooltip.style("opacity", 1);
-          d3.select(this.parentNode.appendChild(this)).style("stroke", color(d.nonouiaucun));
-          d3.select(this.parentNode.appendChild(this)).style("fill", 'white');//brighter(1)d3.rgb(color(d.nonouiaucun)).darker(1)
+          d3.select(this).style("stroke", color(d.nonouiaucun));
+          d3.select(this).style("fill", 'white');//brighter(1)d3.rgb(color(d.nonouiaucun)).darker(1)
 
         })
         .on("mousemove", function(d){
@@ -112,12 +112,32 @@ function drawGraph(id, config){
         })
         .on("mouseleave", function(d){
           tooltip.style("opacity", 0);
-          d3.select(this.parentNode.appendChild(this)).style("fill", color(d.nonouiaucun));
-          d3.select(this.parentNode.appendChild(this)).style("stroke", borderColor[0]);
+          d3.select(this).style("fill", color(d.nonouiaucun));
+          d3.select(this).style("stroke", borderColor[0]);
             
         });
 
-  /*
+    // Add text to big nodes
+    node
+      .filter(function(d) { return d.nb_tweets > 15 })
+      .append("text")
+          .text(function(d){return d.name})
+          .style("text-anchor", "middle")
+          .style("font-weight", "bold")
+          .style("font-size", function(d) { return Math.max(3 * size(d.nb_tweets)/ d.name.length, 5) })
+          .style("fill", "white");
+
+        // Add text to pseudopodyrlife
+    node
+      .filter(function(d) { return d.name == "pseudopodyrlife" })
+      .append("text")
+          .text("Edward Mitchell")
+          .style("text-anchor", "middle")
+          .style("font-weight", "bold")
+          .style("font-size", "6pt")
+          .style("fill", "black");
+
+  /* 13 letters 40 8pt 
     var labels = node.append("text")
         .text(function(d) {
           return d.name;
@@ -155,17 +175,18 @@ function drawGraph(id, config){
     svg.append("g")
       .attr("class", "legend")
       .style("font-size", "0.5rem")
+      .style("padding", "5px")
       .attr("transform", "translate(20,20)");
 
     var colorLegend = d3.legendColor()
       .labelFormat(d3.format(".0f"))
       .shape("path", d3.symbol().type(d3.symbolCircle).size(150)())
       .title("Hashtags utilisés ou retweetés")
-      .labelWrap(30)
+      .labelWrap(80)
       .titleWidth(100)
       .orient("vertical")
       .scale(color)
-      .shapePadding(10)
+      .shapePadding(5)
       .labelOffset(10);
 
     svg.select(".legend")
